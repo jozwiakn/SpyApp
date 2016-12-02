@@ -18,7 +18,19 @@
     <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/connect_button"
-            android:id="@+id/button_connect"
-            android:onClick="connect" android:layout_centerVertical="true" android:layout_centerHorizontal="true"/>
+            android:text="@string/start_button"
+            android:id="@+id/btnStartService"
+            android:onClick="start"
+            android:layout_centerVertical="true" android:layout_centerHorizontal="true"/>
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/stop_button"
+            android:id="@+id/btnStopService"
+            android:layout_below="@+id/btnStartService"
+            android:layout_toRightOf="@+id/text_super"
+            android:onClick="stop"
+            android:layout_toEndOf="@+id/text_super"
+            android:layout_marginTop="68dp"/>
 </RelativeLayout>

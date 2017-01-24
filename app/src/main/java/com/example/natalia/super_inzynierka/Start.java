@@ -9,6 +9,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.TelephonyManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -20,16 +21,25 @@ public class Start extends AppCompatActivity {
 
     private Button btnStartService;
     private Button btnStopService;
+    public static String serialNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
+        TelephonyManager telemamanger = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        serialNumber = telemamanger.getSimSerialNumber();
+        System.out.println("MY NUMBER: " + serialNumber);
+
         btnStartService = (Button) findViewById(R.id.btnStartService);
         btnStopService = (Button) findViewById(R.id.btnStopService);
-//        startMyService();
         Intent locationIntent = new Intent(this, LocationTrace.class);
         startService(locationIntent);
+
+//        Intent serviceIntent = new Intent(this, TempService.class);
+//        System.out.println("intent 1");
+//        startService(serviceIntent);
+//        System.out.println("start service intent");
         finish();
     }
 
@@ -74,14 +84,16 @@ public class Start extends AppCompatActivity {
 //        alarm.setRepeating(AlarmManager.RTC_WAKEUP, cur_cal.getTimeInMillis(), 30*1000, pintent);
 
 
-        Intent serviceIntent = new Intent(this, MyService.class);
-        startService(serviceIntent);
+//        Intent serviceIntent = new Intent(this, MyService.class);
+//        startService(serviceIntent);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         System.out.println("onDestroy");
+        TelephonyManager telemamanger = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        serialNumber = telemamanger.getSimSerialNumber();
 //        startMyService();
 //        Intent locationIntent = new Intent(this, LocationTrace.class);
 //       startService(locationIntent);
@@ -91,7 +103,8 @@ public class Start extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         System.out.println("onStop");
-
+        TelephonyManager telemamanger = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        serialNumber = telemamanger.getSimSerialNumber();
     }
 
     LocationManager locationManager;
@@ -137,7 +150,8 @@ public class Start extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         System.out.println("onPause");
-
+        TelephonyManager telemamanger = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        serialNumber = telemamanger.getSimSerialNumber();
     }
 
     //    private void stopMyService() {
@@ -231,8 +245,6 @@ public class Start extends AppCompatActivity {
 //            }
 //        });
 //    }
-
-
 
 
     public void getRequest() {

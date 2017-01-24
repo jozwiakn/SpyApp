@@ -18,8 +18,7 @@
     <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS"/>
 
 
-
-
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
             android:allowBackup="true"
@@ -53,19 +52,24 @@
                 <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".ServiceAutoStarter">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-        <service android:enabled="true" android:name=".MyService">
-        </service>
-        <service android:name=".LocationTrace">
+
+        <service android:enabled="true"
+                 android:exported="false"
+                 android:name=".LocationTrace">
             <intent-filter android:priority="1000">
                 <action android:name="android.location.PROVIDERS_CHANGED"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </service>
+
+        <receiver
+                android:name=".StartMyServiceAtBootReceiver"
+                android:label="StartMyServiceAtBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

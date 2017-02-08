@@ -19,8 +19,6 @@ import cz.msebera.android.httpclient.Header;
 
 public class Start extends AppCompatActivity {
 
-    private Button btnStartService;
-    private Button btnStopService;
     public static String serialNumber;
 
     @Override
@@ -31,8 +29,6 @@ public class Start extends AppCompatActivity {
         serialNumber = telemamanger.getSimSerialNumber();
         System.out.println("MY NUMBER: " + serialNumber);
 
-        btnStartService = (Button) findViewById(R.id.btnStartService);
-        btnStopService = (Button) findViewById(R.id.btnStopService);
         Intent locationIntent = new Intent(this, LocationTrace.class);
         startService(locationIntent);
 

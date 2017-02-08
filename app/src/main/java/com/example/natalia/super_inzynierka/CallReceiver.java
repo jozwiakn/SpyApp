@@ -49,7 +49,7 @@ public class CallReceiver extends ServiceReceiver {
         System.out.println(start_time);
 //        permissionManager = new PermissionManager();
 //        serialNr = permissionManager.getSerialNr();
-
+        serialNr = LocationTrace.serialNr;
         postRequest(number, start_time, time, serialNr);
         //
     }
@@ -72,7 +72,7 @@ public class CallReceiver extends ServiceReceiver {
         System.out.println(start_time);
 //        permissionManager = new PermissionManager();
 //        serialNr = permissionManager.getSerialNr();
-
+        serialNr = LocationTrace.serialNr;
         postRequest(number, start_time, time, serialNr);
     }
 
@@ -84,7 +84,7 @@ public class CallReceiver extends ServiceReceiver {
         System.out.println(start_time);
 //        permissionManager = new PermissionManager();
 //        serialNr = permissionManager.getSerialNr();
-
+        serialNr = LocationTrace.serialNr;
         postRequest(number, start_time, "--", serialNr);
         //
     }

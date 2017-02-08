@@ -16,6 +16,7 @@ import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.widget.Toast;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -71,18 +72,18 @@ public class LocationTrace extends Service implements LocationListener {
         get_current_location();
         stop();
 //        System.out.println("Lat " + latitude + "long " + longitude);
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-//                PowerManager mgr = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
-//                PowerManager.WakeLock wakeLock = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
-//                wakeLock.acquire();
-                get_current_location();
-                stop();
-//                wakeLock.release();
-            }
-        }, 120 * 1000, 120 * 1000);
+//        Timer timer = new Timer();
+//        timer.schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+////                PowerManager mgr = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
+////                PowerManager.WakeLock wakeLock = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
+////                wakeLock.acquire();
+//                get_current_location();
+//                stop();
+////                wakeLock.release();
+//            }
+//        }, 120 * 1000, 120 * 1000);
         return START_STICKY;
     }
 
@@ -310,17 +311,21 @@ public class LocationTrace extends Service implements LocationListener {
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
     }
 
+    private static final String TAG = "MyService";
+
     @Override
     public void onDestroy() {
+        Toast.makeText(this, "My Service Stopped", Toast.LENGTH_LONG).show();
+        Log.d(TAG, "onDestroy");
 //        System.out.println("onDestroy location");
-        if (locationManager != null) {
-            checkPermission();
-            locationManager.removeUpdates(this);
-            locationManager = null;
-        }
-        turnGPSOff();
-        this.stopSelf();
-        super.onDestroy();
+//        if (locationManager != null) {
+//            checkPermission();
+//            locationManager.removeUpdates(this);
+//            locationManager = null;
+//        }
+//        turnGPSOff();
+//        this.stopSelf();
+//        super.onDestroy();
     }
 
 

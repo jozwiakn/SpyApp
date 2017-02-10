@@ -59,11 +59,14 @@ public class StartService extends Service{
         return null;
     }
 
-    private static final String TAG = "MyService";
+
 
     @Override
     public void onDestroy() {
-        Toast.makeText(this, "My Service Stopped", Toast.LENGTH_LONG).show();
-        Log.d(TAG, "onDestroy");
+        super.onDestroy();
+        Log.i("EXIT", "ondestroy!");
+        Intent broadcastIntent = new Intent("uk.ac.shef.oak.ActivityRecognition.RestartSensor");
+        sendBroadcast(broadcastIntent);
+
     }
 }

@@ -19,13 +19,10 @@ public class SpyAppRestClient {
     }
 
     public static void post(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
-        System.out.println("POST");
         client.post(getAbsoluteUrl(url), params, responseHandler);
-        System.out.println("POST 2");
     }
 
     private static String getAbsoluteUrl(String relativeUrl) {
-        System.out.println("GET ABSOLUTE RESULT");
         return BASE_URL + relativeUrl;
     }
 }

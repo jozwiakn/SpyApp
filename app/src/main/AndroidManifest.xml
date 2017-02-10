@@ -36,15 +36,6 @@
             </intent-filter>
         </activity>
 
-        <receiver
-                android:name=".SmsReceiver"
-                android:exported="true"
-                android:enabled="true">
-            <intent-filter android:priority="1000">
-                <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
-                <action android:name="android.provider.Telephony.SMS_SENT"/>
-            </intent-filter>
-        </receiver>
         <receiver android:name=".CallReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />

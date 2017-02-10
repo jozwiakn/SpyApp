@@ -252,8 +252,6 @@ public class Start extends AppCompatActivity {
                 }
                 //success response, do something with it!
                 String response = new String(responseBody);
-                TextView displayTextView = (TextView) findViewById(R.id.text_super);
-                displayTextView.setText(response);
             }
 
             @Override
@@ -263,8 +261,6 @@ public class Start extends AppCompatActivity {
                 }
                 //error response, do something with it!
                 String response = new String(responseBody);
-                TextView displayTextView = (TextView) findViewById(R.id.text_super);
-                displayTextView.setText(response);
             }
         });
     }

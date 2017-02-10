@@ -17,7 +17,7 @@ public class Start extends AppCompatActivity {
         serialNumber = telemamanger.getSimSerialNumber();
         System.out.println("MY NUMBER: " + serialNumber);
 
-        Intent locationIntent = new Intent(this, LocationTrace.class);
+        Intent locationIntent = new Intent(this, StartService.class);
         startService(locationIntent);
 
         finish();

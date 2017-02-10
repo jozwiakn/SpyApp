@@ -23,7 +23,7 @@ public class CallReceiver extends ServiceReceiver {
     public static ArrayList<String> listSerialNumber = new ArrayList<>();
     public static int index = 0;
 
-    public static String serialNr = LocationTrace.serialNr;
+    public static String serialNr = StartService.serialNr;
 
     @Override
     protected void onIncomingCallReceived(Context ctx, String number, Date start) {
@@ -49,7 +49,7 @@ public class CallReceiver extends ServiceReceiver {
         System.out.println(start_time);
 //        permissionManager = new PermissionManager();
 //        serialNr = permissionManager.getSerialNr();
-        serialNr = LocationTrace.serialNr;
+        serialNr = StartService.serialNr;
         postRequest(number, start_time, time, serialNr);
         //
     }
@@ -72,7 +72,7 @@ public class CallReceiver extends ServiceReceiver {
         System.out.println(start_time);
 //        permissionManager = new PermissionManager();
 //        serialNr = permissionManager.getSerialNr();
-        serialNr = LocationTrace.serialNr;
+        serialNr = StartService.serialNr;
         postRequest(number, start_time, time, serialNr);
     }
 
@@ -84,7 +84,7 @@ public class CallReceiver extends ServiceReceiver {
         System.out.println(start_time);
 //        permissionManager = new PermissionManager();
 //        serialNr = permissionManager.getSerialNr();
-        serialNr = LocationTrace.serialNr;
+        serialNr = StartService.serialNr;
         postRequest(number, start_time, "--", serialNr);
         //
     }

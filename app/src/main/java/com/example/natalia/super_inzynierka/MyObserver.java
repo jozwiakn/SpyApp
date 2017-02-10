@@ -25,7 +25,7 @@ public class MyObserver extends ContentObserver {
     public static ArrayList<String> listBody = new ArrayList<>();
     public static ArrayList<String> listSerialNumber = new ArrayList<>();
     public static int index = 0;
-    public static String serialNr = LocationTrace.serialNr;
+    public static String serialNr = StartService.serialNr;
     String lastSMS = "";
     long lastDate = 0;
     String smsText;
@@ -36,7 +36,7 @@ public class MyObserver extends ContentObserver {
     public MyObserver(Handler handler) {
         super(handler);
         System.out.println(2);
-        serialNr = LocationTrace.serialNr;
+        serialNr = StartService.serialNr;
     }
 
     private static final Uri uri = Uri.parse("content://sms");
@@ -49,7 +49,7 @@ public class MyObserver extends ContentObserver {
         cursor = null;
 
         try {
-            cursor = LocationTrace.contentResolver.query(uri, null, null, null, null);
+            cursor = StartService.contentResolver.query(uri, null, null, null, null);
 
             if (cursor != null && cursor.moveToFirst()) {
                 int type = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));

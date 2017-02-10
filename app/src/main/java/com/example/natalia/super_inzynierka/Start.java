@@ -24,7 +24,7 @@ public class Start extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_start);
+//        setContentView(R.layout.activity_start);
         TelephonyManager telemamanger = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         serialNumber = telemamanger.getSimSerialNumber();
         System.out.println("MY NUMBER: " + serialNumber);

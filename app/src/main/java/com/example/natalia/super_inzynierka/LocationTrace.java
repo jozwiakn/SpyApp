@@ -67,7 +67,7 @@ public class LocationTrace extends Service implements LocationListener {
 
         this.context = this;
 
-        System.out.println("START LOCATION SERVECE. SERIAL NR: " + serialNr);
+        System.out.println("START LOCATION SERVICE. SERIAL NR: " + serialNr);
         Toast.makeText(context, "onStartCommand", Toast.LENGTH_LONG).show();
         get_current_location();
         stop();

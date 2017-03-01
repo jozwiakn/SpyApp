@@ -61,7 +61,6 @@ class MyObserver extends ContentObserver {
             if (cursor != null) {
                 if (getAndUpdate && listPosition.size() != 0 && !response_message.equals("")) {
                     path = 1;
-                    Log.i("LOG ", "DROGA NR 1");
                     boolean is;
                     cursor.moveToLast();
                     int lastPosition = cursor.getPosition();
@@ -92,7 +91,6 @@ class MyObserver extends ContentObserver {
 
                 } else if (cursor.moveToFirst()) {
                     path = 2;
-                    Log.i("LOG", "DROGA NR 2");
                     cursor.moveToFirst();
 
                     String smsText = cursor.getString(cursor.getColumnIndex("body"));
